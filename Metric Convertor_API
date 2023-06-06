@@ -1,0 +1,68 @@
+'use strict';
+
+const expect = require('chai').expect;
+
+class ConvertHandler {
+  // GET request --> return JSON object (Class Method)
+  convert(input) {
+    const initNum = parseFloat(input.match(/[.\d/]+/));
+    const initUnit = input.match(/[a-zA-Z]+/);
+    
+    if (!initNum && !initUnit) {
+      return 'invalid number and unit';
+    } else if (!initNum) {
+      return 'invalid number';
+    } else if (!initUnit) {
+      return 'invalid unit';
+    }
+    
+    const validUnits = ['gal','l','mi','km','lbs','kg'];
+    if (!validUnits.includes(initUnit[0].toLowerCase())) {
+      return 'invalid unit';
+    }
+    
+    let returnNum;
+    let returnUnit;
+    let string;
+
+    const convert = {
+      gal: 3.78541,
+      l: 1/3.78541,
+      lbs: 0.453592,
+      kg: 1/0.453592,
+      mi: 1.60934,
+      km: 1/1.60934
+    };
+
+    returnNum = parseFloat((initNum * convert[initUnit[0].toLowerCase()]).toFixed(5));
+    returnUnit = this.spellOutUnit(initUnit[0].toLowerCase());
+
+    // GET convertor
+    string = `${initNum} ${initUnit} converts to ${returnNum} ${returnUnit}`;
+
+    return {
+      initNum,
+      initUnit: initUnit[0].toLowerCase(),
+      returnNum,
+      returnUnit,
+      string
+    };
+  }
+
+  // Spell out unit
+  spellOutUnit(unit) {
+    const unitString = {
+      gal: 'gallons',
+      l: 'liters',
+      lbs: 'pounds',
+      kg: 'kilograms',
+      mi: 'miles',
+      km: 'kilometers'
+    };
+
+    return unitString[unit];
+  }
+}
+
+module.exports = ConvertHandler;
+

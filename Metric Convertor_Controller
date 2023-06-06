@@ -1,0 +1,115 @@
+function ConvertHandler() {
+  // 1. Numeric value from the user input string
+  this.getNum = function(input) {
+    let units = ['gal', 'l', 'lbs', 'kg', 'mi', 'km'];
+    let validFraction = /^([1-9]\d*(\.\d+)?)[/](\d+(\.\d+)?)$/ // Regex: Match Fractions
+    let validDecimal = /^\d+(\.\d+)?$/ // Regex: Match Decimals
+    let number = input.split(/([a-zA-z]+$)/); // Splits letters from numbers/api/convert?input=4gal
+    number = number.filter(Boolean) // Removes empty or white space
+    let result = number[0];
+    
+    // 2. Input Validation
+    // a) Valid decimal or number: return number
+    if(validDecimal.test(result)) {
+      result = Number(number[0])
+    // b) Number is fraction: split two numbers, return fraction
+    } else if(validFraction.test(result)) {
+        let seperate = result.split('/');
+        let fraction = Number(seperate[0]) / Number(seperate[1]);
+        result = fraction;
+    // c) Split array index is one units: return 1 or 'invalid number'
+    } else if(units.includes(result)) {
+        result = 1
+    } else {
+        result = 'invalid number'
+    }
+    
+    return result;
+  };
+  
+  // 3. Input string split using Boolean
+  this.getUnit = function(input) {
+  let units = ['gal', 'l', 'lbs', 'kg', 'mi', 'km'];
+  let letter = input.split(/([a-zA-z]+$)/); //split letters between numbers
+  letter = letter.filter(Boolean); //remove empty or white space
+  let inputUnit = letter[letter.length - 1];
+  
+  // 4. Input unit validation
+  let unit = inputUnit.toLowerCase();
+  if(!units.includes(unit)) {
+    return 'invalid unit';
+  } else {
+    return inputUnit;
+  }
+};
+
+  //5. Input-Output index validator
+  this.getReturnUnit = function(initUnit) {
+    var result;
+    var input = ["mi", "km", "lbs", "kg", "gal", "L"];
+    var output = ["km", "mi", "kg", "lbs", "L", "gal"];
+    
+    let indexOfInput = input.indexOf(initUnit);
+    
+    if(indexOfInput >= 0) 
+      result = output[indexOfInput];
+    else 
+      result = "invalid unit"
+    return result;
+  };
+  
+  // 6. Input-Output unit index validator (spells out units)
+  this.spellOutUnit = function(unit) {
+    var result;
+    unit = unit.toLowerCase();
+    var input = ["mi", "km", "lbs", "kg", "gal", "l"];
+    var output = ["miles", "kilometers", "pounds", "kilograms", "gallons", "litres"];
+    let indexOfInput = input.indexOf(unit);
+    if(indexOfInput >= 0) 
+      result = output[indexOfInput];
+    else 
+      result = "invalid unit"
+    return result;
+  };
+  
+  // 7. Coversion object
+  this.convert = function(initNum, initUnit) {
+    const galToL = 3.78541;
+    const lbsToKg = 0.453592;
+    const miToKm = 1.60934;
+    const LtoGal = 1/galToL;
+    const kgToLbs = 1/lbsToKg;
+    const kmToMi = 1/miToKm;
+    const convert = {
+      gal: 3.78541,
+      L: 1/3.78541,
+      lbs: 0.453592,
+      kg: 1/0.453592,
+      mi: 1.60934,
+      km: 1/1.60934
+    }
+
+    // 8. Conversion factor string output
+    var conversion = parseFloat (initNum * convert[initUnit]).toFixed(5)
+    if (initNum == "invalid number" && initUnit == "invalid unit") {
+      return "invalid number and unit";
+    }
+    else if (initNum == "invalid number") {
+      return "invalid number";
+    }
+    else if (initUnit == "invalid unit") {
+      return "invalid unit";
+    }
+    else {
+      return conversion;
+    }
+  };
+  
+  // 9. GET convertor
+  this.getString = function(initNum, initUnit, returnNum, returnUnit) {
+    return `${initNum} ${this.spellOutUnit(initUnit)} converts to ${returnNum} ${this.spellOutUnit(returnUnit)}`
+  };
+  
+}
+
+module.exports = ConvertHandler;
